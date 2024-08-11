@@ -55,17 +55,30 @@ app.post("/adminSignIn", (req, res) => {
 })
 
 
-app.post("/addData",(req,res)=>{
-    let input=req.body
-    let token=req.headers.token
-    jwt.verify(token,"rescue-app",(error,decoded)=>{
+app.post("/addData", (req, res) => {
+    let input = req.body
+    let token = req.headers.token
+    jwt.verify(token, "rescue-app", (error, decoded) => {
         if (decoded && decoded.email) {
-            let result=new dataModel(input)
+            let result = new dataModel(input)
             result.save()
-            res.json({"status":"success"})
+            res.json({ "status": "success" })
         } else {
-            res.json({"status":"invalid authentication"})
+            res.json({ "status": "invalid authentication" })
 
+        }
+    })
+})
+
+app.post("/viewAll", (req, res) => {
+    let token = req.headers["token"]
+    jwt.verify(token, "rescue-app", (error, decoded) => {
+        if (decoded) {
+            dataModel.find().then(
+                (responce) => {
+                    res.json(responce)
+                }
+            )
         }
     })
 })
