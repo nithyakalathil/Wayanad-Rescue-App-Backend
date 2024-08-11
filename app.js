@@ -23,6 +23,38 @@ app.post("/adminSignUp",(req,res)=>{
     res.json({"status":"success"})
 })
 
+
+app.post("/adminSignIn",(req,res)=>{
+    let input=req.body
+    let result=loginModel.find({username:input.username}).then((response)=>{
+        if (response.length>0) {
+            const validator=bcrypt.compareSync(input.password,response[0].password)
+            if (validator) {
+                jwt.sign({email:input.username},"rescue-app",{expiresIn:"1d"},(error,token)=>{
+if (error) {
+    res.json({"status":"token created failed"})
+
+} else {
+    res.json({"status":"success","token":token})
+    
+
+}
+                })
+                
+            } else {
+                res.json({"status":"Wrong passsword is entered"})
+
+            }
+
+        } else {
+            res.json({"status":"username does not exist"})
+        }
+    })
+
+})
+
+
+
 app.listen(8080,()=>{
     console.log("server started")
 })
